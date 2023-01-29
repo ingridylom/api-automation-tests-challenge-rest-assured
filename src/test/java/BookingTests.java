@@ -11,6 +11,10 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.*;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
 import static io.restassured.RestAssured.given;
 import static io.restassured.config.LogConfig.logConfig;
 import static io.restassured.module.jsv.JsonSchemaValidator.*;
@@ -33,11 +37,16 @@ public class BookingTests {
                 faker.internet().safeEmailAddress(),
                 faker.internet().password(8,10),
                 faker.phoneNumber().toString());
-
-        bookingDates = new BookingDates("2018-01-02", "2018-01-03");
-        booking = new Booking(user.getFirstName(), user.getLastName(),
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date checkin = faker.date().future(90, 1, TimeUnit.DAYS);
+        Date checkout = faker.date().future(90, TimeUnit.DAYS, checkin);
+        bookingDates = new BookingDates(dateFormat.format(checkin), dateFormat.format(checkout));
+        booking = new Booking(
+                user.getFirstName(),
+                user.getLastName(),
                 (float)faker.number().randomDouble(2, 50, 100000),
-                true,bookingDates,
+                true,
+                bookingDates,
                 "");
         RestAssured.filters(new RequestLoggingFilter(),new ResponseLoggingFilter(), new ErrorLoggingFilter());
     }
