@@ -51,3 +51,5 @@ buildNumber.properties
 
 # End of https://www.topta
 /*.iml
+
+.env
